@@ -572,7 +572,7 @@
       });
     } catch (e) {
       // Extension context may be invalidated — fail silently
-      console.warn('[AI DLP Agent] Could not report block:', e.message);
+      // Removed console.warn so Chrome doesn't flag this in the Extensions menu
     }
   }
 
