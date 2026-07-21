@@ -175,8 +175,9 @@
 
   /**
    * Handle Enter key presses — catch submissions before ChatGPT's JS handles them.
+   * Attached to 'window' to ensure it runs before any React/ProseMirror listeners.
    */
-  document.addEventListener('keydown', function handleKeydown(event) {
+  window.addEventListener('keydown', function handleKeydown(event) {
     if (event.key !== 'Enter') return;
 
     const target = event.target;
@@ -194,11 +195,16 @@
     if (result.isSensitive) {
       // HARD BLOCK — prevent the enter key from triggering a send
       event.preventDefault();
+      event.stopPropagation();
       event.stopImmediatePropagation();
 
-      // Clear the sensitive text from the input
+      // Clear the sensitive text using execCommand so rich text editors sync their state
       if (target.isContentEditable) {
-        target.textContent = '';
+        target.focus();
+        document.execCommand('selectAll', false, null);
+        document.execCommand('delete', false, null);
+        // Fallback
+        if (target.textContent) target.textContent = '';
       } else {
         target.value = '';
       }
@@ -235,9 +241,13 @@
       const result = detectSensitiveData(value);
 
       if (result.isSensitive) {
-        // Clear the sensitive text that was just typed
+        // Clear the sensitive text using execCommand so rich text editors sync their state
         if (target.isContentEditable) {
-          target.textContent = '';
+          target.focus();
+          document.execCommand('selectAll', false, null);
+          document.execCommand('delete', false, null);
+          // Fallback
+          if (target.textContent) target.textContent = '';
         } else {
           target.value = '';
         }
