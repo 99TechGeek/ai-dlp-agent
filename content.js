@@ -82,7 +82,7 @@
     },
     {
       name: 'PI: Persona Jailbreak',
-      regex: /(?:you\s+are\s+(?:now\s+)?(?:dan|unrestricted\s+ai|root|an\s+evil\s+ai)|(?:pretend\s+you\s+are|roleplay\s+as|act\s+as)\s+(?:a\s+hacker|an\s+ai\s+with\s+no\s+rules|a\s+model\s+without\s+limitations)|(?:enter|activate)\s+(?:developer|admin)\s+mode)/i,
+      regex: /(?:(?:you\s+are|assume\s+(?:the\s+)?role|act\s+as|roleplay\s+as|pretend).{0,30}\b(?:dan|unrestricted\s+ai|root|an\s+evil\s+ai|hacker|a\s+model\s+without\s+limitations)\b|(?:enter|activate)\s+(?:developer|admin)\s+mode)/i,
       severity: 'high'
     },
     {
