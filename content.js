@@ -174,7 +174,6 @@
       const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
       if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
         // Bypass active, allow it through
-        delete document.documentElement.dataset.dlpBypass;
         return;
       }
 
@@ -207,7 +206,6 @@
         const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
         if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
           // Bypass active
-          delete document.documentElement.dataset.dlpBypass;
           continue;
         }
 
@@ -245,7 +243,6 @@
       const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
       if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
         // Bypass active
-        delete document.documentElement.dataset.dlpBypass;
         return;
       }
 
@@ -359,7 +356,6 @@
     if (result.isSensitive) {
       const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
       if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
-        delete document.documentElement.dataset.dlpBypass;
         return;
       }
       event.preventDefault();
@@ -421,7 +417,7 @@
         right: 20px;
         z-index: 2147483647;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        pointer-events: none;
+        pointer-events: auto; /* Changed from none so button is clickable */
         animation: ai-dlp-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
@@ -600,7 +596,7 @@
 
     document.documentElement.appendChild(warning);
 
-    // Auto-dismiss after 4 seconds with slide-out animation
+    // Auto-dismiss after 8 seconds with slide-out animation
     setTimeout(() => {
       warning.style.animation = 'ai-dlp-slide-out 0.3s ease-in forwards';
       setTimeout(() => {
@@ -608,7 +604,7 @@
           warning.remove();
         }
       }, 300);
-    }, 4000);
+    }, 8000);
   }
 
   // ============================================================
