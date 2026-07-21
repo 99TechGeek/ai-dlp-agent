@@ -171,12 +171,18 @@
     const result = detectSensitiveData(pastedText);
 
     if (result.isSensitive) {
+      if (event.isTrusted && event.target.dataset.dlpBypass && (Date.now() - parseInt(event.target.dataset.dlpBypass) < 15000)) {
+        // Bypass active, allow it through
+        delete event.target.dataset.dlpBypass;
+        return;
+      }
+
       // HARD BLOCK — prevent the paste from reaching the DOM
       event.preventDefault();
       event.stopImmediatePropagation();
 
       // Show warning toast
-      showWarning(event.target, result);
+      showWarning(event.target, result, event.isTrusted);
 
       // Report to background service worker
       reportBlock(result, 'paste');
@@ -197,11 +203,17 @@
       const result = detectSensitiveData(value);
 
       if (result.isSensitive) {
+        if (event.isTrusted && field.dataset.dlpBypass && (Date.now() - parseInt(field.dataset.dlpBypass) < 15000)) {
+          // Bypass active
+          delete field.dataset.dlpBypass;
+          continue;
+        }
+
         // Block the form submission
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        showWarning(field, result);
+        showWarning(field, result, event.isTrusted);
         reportBlock(result, 'submit');
         return; // Stop checking other fields
       }
@@ -228,23 +240,31 @@
     const result = detectSensitiveData(value);
 
     if (result.isSensitive) {
+      if (event.isTrusted && target.dataset.dlpBypass && (Date.now() - parseInt(target.dataset.dlpBypass) < 15000)) {
+        // Bypass active
+        delete target.dataset.dlpBypass;
+        return;
+      }
+
       // HARD BLOCK — prevent the enter key from triggering a send
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
 
-      // Clear the sensitive text using execCommand so rich text editors sync their state
-      if (target.isContentEditable) {
-        target.focus();
-        document.execCommand('selectAll', false, null);
-        document.execCommand('delete', false, null);
-        // Fallback
-        if (target.textContent) target.textContent = '';
-      } else {
-        target.value = '';
+      // Clear the sensitive text ONLY if not trusted (automated agent)
+      if (!event.isTrusted) {
+        if (target.isContentEditable) {
+          target.focus();
+          document.execCommand('selectAll', false, null);
+          document.execCommand('delete', false, null);
+          // Fallback
+          if (target.textContent) target.textContent = '';
+        } else {
+          target.value = '';
+        }
       }
 
-      showWarning(target, result);
+      showWarning(target, result, event.isTrusted);
       reportBlock(result, 'submit');
     }
   }, true);
@@ -276,18 +296,24 @@
       const result = detectSensitiveData(value);
 
       if (result.isSensitive) {
-        // Clear the sensitive text using execCommand so rich text editors sync their state
-        if (target.isContentEditable) {
-          target.focus();
-          document.execCommand('selectAll', false, null);
-          document.execCommand('delete', false, null);
-          // Fallback
-          if (target.textContent) target.textContent = '';
-        } else {
-          target.value = '';
+        if (event.isTrusted && target.dataset.dlpBypass && (Date.now() - parseInt(target.dataset.dlpBypass) < 15000)) {
+          return;
         }
 
-        showWarning(target, result);
+        // Clear the sensitive text ONLY if not trusted
+        if (!event.isTrusted) {
+          if (target.isContentEditable) {
+            target.focus();
+            document.execCommand('selectAll', false, null);
+            document.execCommand('delete', false, null);
+            // Fallback
+            if (target.textContent) target.textContent = '';
+          } else {
+            target.value = '';
+          }
+        }
+
+        showWarning(target, result, event.isTrusted);
         reportBlock(result, 'input');
       }
     }, 500);
@@ -327,10 +353,12 @@
     const result = detectSensitiveData(droppedText);
 
     if (result.isSensitive) {
+      if (event.isTrusted && event.target.dataset.dlpBypass && (Date.now() - parseInt(event.target.dataset.dlpBypass) < 15000)) {
+        return;
+      }
       event.preventDefault();
       event.stopImmediatePropagation();
-
-      showWarning(event.target, result);
+      showWarning(event.target, result, event.isTrusted);
       reportBlock(result, 'drop');
     }
   }, true);
@@ -474,11 +502,26 @@
         from { width: 100%; }
         to   { width: 0%; }
       }
+
+      .ai-dlp-bypass-btn {
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.8);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .ai-dlp-bypass-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
     `;
     document.documentElement.appendChild(style);
   }
 
-  function showWarning(element, result) {
+  function showWarning(element, result, canBypass = false) {
     // Remove any existing warnings first
     const existing = document.querySelectorAll('.ai-dlp-warning');
     existing.forEach(el => el.remove());
@@ -533,12 +576,25 @@
     card.appendChild(header);
     card.appendChild(body);
     card.appendChild(badge);
+
+    if (canBypass) {
+      const bypassBtn = document.createElement('button');
+      bypassBtn.className = 'ai-dlp-bypass-btn';
+      bypassBtn.textContent = 'Allow Anyway';
+      bypassBtn.onclick = () => {
+        element.dataset.dlpBypass = Date.now();
+        warning.style.animation = 'ai-dlp-slide-out 0.3s ease-in forwards';
+        setTimeout(() => { if (warning.parentNode) warning.remove(); }, 300);
+      };
+      card.appendChild(bypassBtn);
+    }
+
     card.appendChild(progress);
     warning.appendChild(card);
 
     document.documentElement.appendChild(warning);
 
-    // Auto-dismiss after 3 seconds with slide-out animation
+    // Auto-dismiss after 4 seconds with slide-out animation
     setTimeout(() => {
       warning.style.animation = 'ai-dlp-slide-out 0.3s ease-in forwards';
       setTimeout(() => {
@@ -546,7 +602,7 @@
           warning.remove();
         }
       }, 300);
-    }, 3000);
+    }, 4000);
   }
 
   // ============================================================
