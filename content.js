@@ -174,6 +174,41 @@
   }, true); // capture phase
 
   /**
+   * Handle Enter key presses — catch submissions before ChatGPT's JS handles them.
+   */
+  document.addEventListener('keydown', function handleKeydown(event) {
+    if (event.key !== 'Enter') return;
+
+    const target = event.target;
+    if (!target) return;
+
+    const tagName = target.tagName;
+    if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && !target.isContentEditable) return;
+
+    const value = target.isContentEditable
+      ? (target.innerText || target.textContent || '')
+      : (target.value || '');
+
+    const result = detectSensitiveData(value);
+
+    if (result.isSensitive) {
+      // HARD BLOCK — prevent the enter key from triggering a send
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      // Clear the sensitive text from the input
+      if (target.isContentEditable) {
+        target.textContent = '';
+      } else {
+        target.value = '';
+      }
+
+      showWarning(target, result);
+      reportBlock(result, 'submit');
+    }
+  }, true);
+
+  /**
    * Handle input events — monitor text being typed/autofilled.
    * Uses a debounce to avoid scanning on every keystroke.
    */
@@ -200,6 +235,13 @@
       const result = detectSensitiveData(value);
 
       if (result.isSensitive) {
+        // Clear the sensitive text that was just typed
+        if (target.isContentEditable) {
+          target.textContent = '';
+        } else {
+          target.value = '';
+        }
+
         showWarning(target, result);
         reportBlock(result, 'input');
       }
