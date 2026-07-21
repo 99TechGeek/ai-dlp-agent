@@ -71,9 +71,44 @@
       severity: 'high'
     },
     {
-      name: 'Prompt Injection',
-      regex: /(?:ignore\s+(?:all\s+)?(?:previous\s+)?(?:instructions|directions)|system\s+prompt|bypass\s+(?:all\s+)?(?:rules|policies))/i,
+      name: 'PI: Instruction Override',
+      regex: /(?:(?:ignore|bypass|disregard|forget|cancel|override)\s+(?:all\s+)?(?:your\s+)?(?:prior\s+)?(?:previous\s+)?(?:prompt\s+)?(?:instructions|directions|rules|policies|task)|(?:new\s+instructions|your\s+real\s+task\s+is|rules?\s+no\s+longer\s+apply|not\s+restricted|pretend\s+(?:the\s+)?system\s+message))/i,
       severity: 'high'
+    },
+    {
+      name: 'PI: System Extraction',
+      regex: /(?:(?:reveal|print|show(?:\s+me)?|dump|output|translate|summarize)\s+(?:your\s+)?(?:hidden\s+)?(?:internal\s+)?(?:initial\s+)?(?:developer\s+)?(?:system\s+)?(?:prompt|instructions|configuration|rules|policy\s+text|message)|(?:what\s+were\s+you\s+told|what\s+are\s+your\s+internal\s+rules))/i,
+      severity: 'high'
+    },
+    {
+      name: 'PI: Persona Jailbreak',
+      regex: /(?:you\s+are\s+(?:now\s+)?(?:dan|unrestricted\s+ai|root|an\s+evil\s+ai)|(?:pretend\s+you\s+are|roleplay\s+as|act\s+as)\s+(?:a\s+hacker|an\s+ai\s+with\s+no\s+rules|a\s+model\s+without\s+limitations)|(?:enter|activate)\s+(?:developer|admin)\s+mode)/i,
+      severity: 'high'
+    },
+    {
+      name: 'PI: Authority',
+      regex: /(?:i\s+am\s+(?:the\s+)?(?:administrator|developer)|(?:openai|creator)\s+(?:authorized|requested)\s+this|this\s+is\s+a\s+(?:system\s+update|security\s+test)|(?:internal\s+audit\s+mode|developer\s+override|maintenance\s+instruction)\s+(?:enabled|granted|follows))/i,
+      severity: 'high'
+    },
+    {
+      name: 'PI: Fake Context',
+      regex: /(?:\[(?:admin\s+message|system|developer|root|admin)\]|<system>|<instruction>|<override>|###\s+IMPORTANT\s+SYSTEM\s+MESSAGE\s+###)/i,
+      severity: 'high'
+    },
+    {
+      name: 'PI: Context Manipulation',
+      regex: /(?:previous\s+message\s+was\s+a\s+mistake|user\s+(?:before\s+me\s+)?authorized\s+this|assume\s+all\s+previous\s+content|continue\s+from\s+the\s+hidden\s+context|use\s+the\s+original\s+instructions|restore\s+the\s+unrestricted\s+version|conversation\s+has\s+been\s+reset)/i,
+      severity: 'high'
+    },
+    {
+      name: 'PI: Tool Abuse',
+      regex: /(?:call\s+this\s+api|ignore\s+approval|upload\s+this\s+file|execute\s+this\s+(?:command|shell)|run\s+this\s+(?:code|script)|access\s+private\s+files|sudo\s+rm\s+-rf|disable\s+security|remove\s+authentication|turn\s+off\s+validation)/i,
+      severity: 'high'
+    },
+    {
+      name: 'PI: Base64',
+      regex: /(?:SWdub3Jl)/i,
+      severity: 'medium'
     }
   ];
 
