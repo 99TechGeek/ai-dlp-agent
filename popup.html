@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI DLP Agent</title>
+  <!-- System fonts used; Google Fonts not loaded due to MV3 CSP restrictions -->
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="popup" id="popup">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__icon">🛡️</div>
+      <div class="header__text">
+        <h1 class="header__title">AI DLP Agent</h1>
+        <p class="header__tagline">Guarding your sensitive data in real time</p>
+      </div>
+    </header>
+
+    <!-- Stat Cards -->
+    <section class="stats" aria-label="Security statistics">
+      <article class="stat-card" id="stat-total">
+        <span class="stat-card__value" data-target="0">0</span>
+        <span class="stat-card__label">Total Blocks</span>
+      </article>
+      <article class="stat-card" id="stat-threat">
+        <span class="stat-card__value" id="top-threat-value">—</span>
+        <span class="stat-card__label">Top Threat</span>
+      </article>
+      <article class="stat-card" id="stat-domain">
+        <span class="stat-card__value" id="top-domain-value">—</span>
+        <span class="stat-card__label">Top Domain</span>
+      </article>
+    </section>
+
+    <!-- Bar Chart -->
+    <section class="chart-section" aria-label="Threats blocked by type">
+      <h2 class="section-title">Threats Blocked</h2>
+      <div class="chart" id="bar-chart">
+        <!-- Bars rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="activity-section" aria-label="Recent activity">
+      <h2 class="section-title">Recent Activity</h2>
+      <ul class="activity-list" id="activity-list">
+        <!-- Events rendered by JS -->
+      </ul>
+    </section>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="empty-state" hidden>
+      <span class="empty-state__icon">✅</span>
+      <p class="empty-state__text">No threats detected yet</p>
+      <p class="empty-state__subtext">Your data is safe — for now.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <button class="btn-clear" id="btn-clear" type="button">Clear Data</button>
+      <span class="footer__version">v0.1.1</span>
+    </footer>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

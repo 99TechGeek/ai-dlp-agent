@@ -1,0 +1,404 @@
+[
+  {
+    "input": "My AWS key is AKIAIOSFODNN7EXAMPLE",
+    "expected": "block",
+    "type": "AWS Key",
+    "description": "Standard AWS access key in sentence"
+  },
+  {
+    "input": "AKIAI44QH8DHBEXAMPLE",
+    "expected": "block",
+    "type": "AWS Key",
+    "description": "Standalone AWS access key"
+  },
+  {
+    "input": "export AWS_ACCESS_KEY_ID=AKIA3EXAMPLE1234ABCD",
+    "expected": "block",
+    "type": "AWS Key",
+    "description": "AWS key in environment variable export"
+  },
+  {
+    "input": "aws_access_key_id = AKIA9B8C7D6E5F4G3H2I",
+    "expected": "block",
+    "type": "AWS Key",
+    "description": "AWS key in config file format"
+  },
+  {
+    "input": "secret=d41d8cd98f00b204e9800998ecf8427e",
+    "expected": "block",
+    "type": "API Key",
+    "description": "32-char hex API key with secret= context"
+  },
+  {
+    "input": "API-KEY: 0123456789abcdef0123456789abcdef",
+    "expected": "block",
+    "type": "API Key",
+    "description": "API key with header prefix"
+  },
+  {
+    "input": "Set api_key=a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6 in the config",
+    "expected": "block",
+    "type": "API Key",
+    "description": "API key with api_key= context in instruction text"
+  },
+  {
+    "input": "4111111111111111",
+    "expected": "block",
+    "type": "Credit Card",
+    "description": "Visa test credit card number (no separators)"
+  },
+  {
+    "input": "4111-1111-1111-1111",
+    "expected": "block",
+    "type": "Credit Card",
+    "description": "Visa credit card with dashes"
+  },
+  {
+    "input": "5500 0000 0000 0004",
+    "expected": "block",
+    "type": "Credit Card",
+    "description": "Mastercard number with spaces"
+  },
+  {
+    "input": "Please charge my card 3782-8224-6310-0050 for the order",
+    "expected": "block",
+    "type": "Credit Card",
+    "description": "Amex-like card embedded in sentence"
+  },
+  {
+    "input": "123-45-6789",
+    "expected": "block",
+    "type": "SSN",
+    "description": "Standard SSN format"
+  },
+  {
+    "input": "My social security number is 987-65-4321",
+    "expected": "block",
+    "type": "SSN",
+    "description": "SSN in conversational text"
+  },
+  {
+    "input": "SSN: 000-12-3456",
+    "expected": "block",
+    "type": "SSN",
+    "description": "SSN with label prefix"
+  },
+  {
+    "input": "user@example.com",
+    "expected": "block",
+    "type": "Email",
+    "description": "Simple email address"
+  },
+  {
+    "input": "Contact john.doe+work@company-name.co.uk for details",
+    "expected": "block",
+    "type": "Email",
+    "description": "Complex email with subdomain and plus addressing"
+  },
+  {
+    "input": "Send invoices to billing@acme.org and cc finance@acme.org",
+    "expected": "block",
+    "type": "Email",
+    "description": "Multiple emails in one line"
+  },
+  {
+    "input": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U",
+    "expected": "block",
+    "type": "JWT",
+    "description": "Standard JWT token (HS256)"
+  },
+  {
+    "input": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJhcGkuZXhhbXBsZS5jb20ifQ.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
+    "expected": "block",
+    "type": "JWT",
+    "description": "JWT in Authorization Bearer header"
+  },
+  {
+    "input": "token=eyJhbGciOiJFUzI1NiJ9.eyJ1c2VyX2lkIjo0Mn0.abc123_DEF456-ghi789_JKL012",
+    "expected": "block",
+    "type": "JWT",
+    "description": "JWT in query parameter format"
+  },
+  {
+    "input": "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef1234",
+    "expected": "block",
+    "type": "GitHub Token",
+    "description": "GitHub personal access token (ghp_)"
+  },
+  {
+    "input": "ghs_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef1234",
+    "expected": "block",
+    "type": "GitHub Token",
+    "description": "GitHub server-to-server token (ghs_)"
+  },
+  {
+    "input": "GITHUB_TOKEN=ghp_1234567890abcdefghijABCDEFGHIJ123456",
+    "expected": "block",
+    "type": "GitHub Token",
+    "description": "GitHub token in env variable assignment"
+  },
+  {
+    "input": "-----BEGIN RSA KEY-----",
+    "expected": "block",
+    "type": "Private Key",
+    "description": "RSA private key header"
+  },
+  {
+    "input": "-----BEGIN EC KEY-----",
+    "expected": "block",
+    "type": "Private Key",
+    "description": "EC private key header"
+  },
+  {
+    "input": "-----BEGIN PRIVATE KEY-----",
+    "expected": "block",
+    "type": "Private Key",
+    "description": "Generic private key header"
+  },
+  {
+    "input": "Paste your key:\n-----BEGIN RSA KEY-----\nMIIBogIBAAJBAL...",
+    "expected": "block",
+    "type": "Private Key",
+    "description": "Private key header in multiline context"
+  },
+  {
+    "input": "xoxb-123456789012-1234567890123-ABCDefghIJKLmnop",
+    "expected": "block",
+    "type": "Slack Token",
+    "description": "Slack bot token"
+  },
+  {
+    "input": "xoxp-999888777666-123456789012-abcDEFghiJKL",
+    "expected": "block",
+    "type": "Slack Token",
+    "description": "Slack user token"
+  },
+  {
+    "input": "SLACK_TOKEN=xoxs-123-456-789-abcdef",
+    "expected": "block",
+    "type": "Slack Token",
+    "description": "Slack token in env config"
+  },
+  {
+    "input": "AIzaSyA1bcDeFgHiJkLmNoPqRsTuVwXyZ-012345",
+    "expected": "block",
+    "type": "Google API Key",
+    "description": "Standard Google API key"
+  },
+  {
+    "input": "key=AIzaSyBCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefgh",
+    "expected": "block",
+    "type": "Google API Key",
+    "description": "Google API key in URL parameter"
+  },
+  {
+    "input": "GOOGLE_API_KEY=AIzaSyCDEFG_HIJKLMNOP-QRSTUVWXYZ1234567",
+    "expected": "block",
+    "type": "Google API Key",
+    "description": "Google API key in environment variable"
+  },
+  {
+    "input": "The weather today is sunny with a high of 75 degrees.",
+    "expected": "allow",
+    "type": null,
+    "description": "Normal English sentence about weather"
+  },
+  {
+    "input": "Please review the quarterly report and submit feedback by Friday.",
+    "expected": "allow",
+    "type": null,
+    "description": "Normal business communication"
+  },
+  {
+    "input": "The cat sat on the mat.",
+    "expected": "allow",
+    "type": null,
+    "description": "Simple English sentence"
+  },
+  {
+    "input": "Meeting scheduled for 2:30 PM in Conference Room B.",
+    "expected": "allow",
+    "type": null,
+    "description": "Calendar-style text"
+  },
+  {
+    "input": "const hash = crypto.createHash('sha256').update(data).digest('hex');",
+    "expected": "allow",
+    "type": null,
+    "description": "Code snippet that references hashing but contains no secrets"
+  },
+  {
+    "input": "function getApiKey() { return process.env.API_KEY; }",
+    "expected": "allow",
+    "type": null,
+    "description": "Code that mentions API_KEY variable name but no actual key"
+  },
+  {
+    "input": "const AWS_KEY_PREFIX = 'AKIA';",
+    "expected": "allow",
+    "type": null,
+    "description": "Code with AKIA prefix but not a full key (only 4 chars)"
+  },
+  {
+    "input": "ISBN-13: 978-3-16-148410-0",
+    "expected": "allow",
+    "type": null,
+    "description": "ISBN number that has digit groups but isn't a credit card"
+  },
+  {
+    "input": "Order #1234-5678-9012 placed on 2024-01-15",
+    "expected": "allow",
+    "type": null,
+    "description": "Order number with dashes that could look like a card number (only 12 digits)"
+  },
+  {
+    "input": "Phone: 555-123-4567",
+    "expected": "allow",
+    "type": null,
+    "description": "Phone number that superficially resembles SSN format but has different grouping"
+  },
+  {
+    "input": "https://example.com/search?q=hello&page=2&sort=desc",
+    "expected": "allow",
+    "type": null,
+    "description": "URL with query parameters but no secrets"
+  },
+  {
+    "input": "https://api.example.com/v2/users?limit=100&offset=0",
+    "expected": "allow",
+    "type": null,
+    "description": "API URL with numeric params that aren't sensitive"
+  },
+  {
+    "input": "Follow us @company on Twitter and @company_dev on GitHub!",
+    "expected": "allow",
+    "type": null,
+    "description": "Social media @ mentions that aren't email addresses"
+  },
+  {
+    "input": "Use the @Override annotation in Java classes",
+    "expected": "allow",
+    "type": null,
+    "description": "Java annotation with @ symbol, not an email"
+  },
+  {
+    "input": "-----BEGIN CERTIFICATE-----",
+    "expected": "allow",
+    "type": null,
+    "description": "Certificate header (not a private key)"
+  },
+  {
+    "input": "-----BEGIN PUBLIC KEY-----",
+    "expected": "allow",
+    "type": null,
+    "description": "Public key header (not a private key)"
+  },
+  {
+    "input": "gho_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef1234",
+    "expected": "allow",
+    "type": null,
+    "description": "GitHub OAuth token prefix gho_ does not match gh[ps]_ pattern"
+  },
+  {
+    "input": "xoxa-not-a-real-prefix-token",
+    "expected": "block",
+    "type": "Slack Token",
+    "description": "Slack token with xoxa prefix (matches xox[bpars])"
+  },
+  {
+    "input": "xoxr-recovery-token-example123",
+    "expected": "block",
+    "type": "Slack Token",
+    "description": "Slack token with xoxr prefix (matches xox[bpars])"
+  },
+  {
+    "input": "The value GHIJKLMNOP is not a token",
+    "expected": "allow",
+    "type": null,
+    "description": "Text with uppercase letters but not matching any pattern"
+  },
+  {
+    "input": "Contact support at help @ our website . com for assistance",
+    "expected": "allow",
+    "type": null,
+    "description": "Spaced-out @ that doesn't form a valid email"
+  },
+  {
+    "input": "My AWS key is AKIAIOSFODNN7EXAMPLE and my email is admin@internal.corp",
+    "expected": "block",
+    "type": "Multi-pattern",
+    "description": "Text containing both an AWS key and an email address"
+  },
+  {
+    "input": "Config: SSN=123-45-6789, CC=4111-1111-1111-1111, email=test@test.com",
+    "expected": "block",
+    "type": "Multi-pattern",
+    "description": "Text containing SSN, credit card, and email simultaneously"
+  },
+  {
+    "input": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. The secret key is AKIAIOSFODNN7EXAMPLE and it should not be shared. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "expected": "block",
+    "type": "AWS Key",
+    "description": "Very long text with AWS key buried in the middle of lorem ipsum"
+  },
+  {
+    "input": "###AKIAIOSFODNN7EXAMPLE###",
+    "expected": "block",
+    "type": "AWS Key",
+    "description": "AWS key surrounded by special characters (hash symbols)"
+  },
+  {
+    "input": "<<user@example.com>>",
+    "expected": "block",
+    "type": "Email",
+    "description": "Email surrounded by angle brackets"
+  },
+  {
+    "input": "[SSN:123-45-6789]",
+    "expected": "block",
+    "type": "SSN",
+    "description": "SSN wrapped in square brackets with label"
+  },
+  {
+    "input": "AKIA1234567890AB",
+    "expected": "allow",
+    "type": null,
+    "description": "Near-miss: AKIA prefix but only 12 chars after (needs 16)"
+  },
+  {
+    "input": "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcde",
+    "expected": "allow",
+    "type": null,
+    "description": "Near-miss: GitHub token prefix but only 35 chars after underscore (needs 36)"
+  },
+  {
+    "input": "eyJhbGciOiJIUzI1NiJ9.payload_only",
+    "expected": "allow",
+    "type": null,
+    "description": "Near-miss: JWT-like but only two segments instead of three"
+  },
+  {
+    "input": "AIzaSy_only_34_chars_not_35_paddin",
+    "expected": "allow",
+    "type": null,
+    "description": "Near-miss: Google API key prefix but wrong length"
+  },
+  {
+    "input": "D41D8CD98F00B204E9800998ECF8427E",
+    "expected": "allow",
+    "type": null,
+    "description": "32-char hex in UPPERCASE (API key pattern requires lowercase)"
+  },
+  {
+    "input": "Password: \"xoxb-fake\" is shown in docs as example",
+    "expected": "block",
+    "type": "Slack Token",
+    "description": "Slack token inside quoted string in a sentence"
+  },
+  {
+    "input": "d41d8cd98f00b204e9800998ecf8427e",
+    "expected": "allow",
+    "type": null,
+    "description": "Bare 32-char lowercase hex without context keywords (e.g. MD5 hash) — should NOT trigger API Key detection"
+  }
+]

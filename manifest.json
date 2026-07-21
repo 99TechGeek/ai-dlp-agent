@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "AI DLP Agent",
+  "version": "0.1.1",
+  "description": "Prevent sensitive data leaks to AI tools in real-time. Detects PII, API keys, secrets, and blocks them before they reach ChatGPT, Claude, or Gemini.",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.chatgpt.com/*",
+    "*://*.openai.com/*",
+    "*://*.claude.ai/*",
+    "*://*.anthropic.com/*",
+    "*://*.gemini.google.com/*",
+    "*://*.bard.google.com/*",
+    "*://*.copilot.microsoft.com/*",
+    "*://*.perplexity.ai/*",
+    "*://*.poe.com/*",
+    "*://*.huggingface.co/*"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.chatgpt.com/*",
+        "*://*.openai.com/*",
+        "*://*.claude.ai/*",
+        "*://*.anthropic.com/*",
+        "*://*.gemini.google.com/*",
+        "*://*.bard.google.com/*",
+        "*://*.copilot.microsoft.com/*",
+        "*://*.perplexity.ai/*",
+        "*://*.poe.com/*",
+        "*://*.huggingface.co/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI DLP Agent — Data Leak Prevention"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

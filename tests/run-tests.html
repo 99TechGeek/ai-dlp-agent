@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DLP Detection Engine — Test Runner</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --green: #3fb950;
+    --green-bg: #0d2818;
+    --red: #f85149;
+    --red-bg: #2d1214;
+    --blue: #58a6ff;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+    --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem; padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 1.6rem; font-weight: 600;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header .subtitle { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.55rem 1.1rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg-tertiary); color: var(--text-primary);
+    font-size: 0.85rem; font-weight: 500; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn:hover { background: var(--border); border-color: var(--text-muted); }
+  .btn-primary { background: #238636; border-color: #2ea043; }
+  .btn-primary:hover { background: #2ea043; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Summary Cards */
+  .summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .card {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.2rem;
+  }
+  .card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+  .card .value { font-size: 1.8rem; font-weight: 700; font-family: var(--font-mono); }
+  .card .value.pass { color: var(--green); }
+  .card .value.fail { color: var(--red); }
+  .card .value.total { color: var(--blue); }
+  .card .value.pct { color: var(--purple); }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: var(--bg-tertiary); border-radius: 6px; height: 6px;
+    margin-bottom: 1.5rem; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; border-radius: 6px; width: 0%;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    transition: width 0.3s;
+  }
+
+  /* Filter Tabs */
+  .filters {
+    display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 0.35rem 0.75rem; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-secondary); font-size: 0.8rem;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+  .filter-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* Results Table */
+  .table-wrap {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead { background: var(--bg-tertiary); }
+  th {
+    text-align: left; padding: 0.75rem 1rem; font-weight: 600;
+    color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 0.04em; border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.65rem 1rem; border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr.pass { background: transparent; }
+  tr.fail { background: var(--red-bg); }
+  td.status-cell {
+    font-weight: 600; font-family: var(--font-mono); font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  td.status-cell.pass-text { color: var(--green); }
+  td.status-cell.fail-text { color: var(--red); }
+  .input-cell {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    max-width: 420px; word-break: break-all;
+    color: var(--text-primary);
+  }
+  .tag {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 12px;
+    font-size: 0.72rem; font-weight: 500; border: 1px solid;
+    white-space: nowrap;
+  }
+  .tag-block { color: var(--red); border-color: var(--red); background: var(--red-bg); }
+  .tag-allow { color: var(--green); border-color: var(--green); background: var(--green-bg); }
+  .type-tag {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 12px;
+    font-size: 0.72rem; background: var(--bg-tertiary); border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .desc-cell { color: var(--text-secondary); font-size: 0.82rem; }
+
+  /* Loading / Empty */
+  .loading {
+    text-align: center; padding: 3rem; color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .spinner {
+    display: inline-block; width: 24px; height: 24px;
+    border: 3px solid var(--border); border-top-color: var(--blue);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    margin-bottom: 0.75rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    body { padding: 1rem; }
+    .header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .summary { grid-template-columns: repeat(2, 1fr); }
+    .input-cell { max-width: 200px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>🛡️ DLP Detection Engine — Test Runner</h1>
+      <div class="subtitle">Browser-native Data Loss Prevention · Regex Pattern Test Suite</div>
+    </div>
+    <div style="display:flex;gap:0.5rem;">
+      <button class="btn btn-primary" id="runBtn" onclick="runTests()">▶ Run Tests</button>
+      <button class="btn" id="exportBtn" onclick="exportResults()" disabled>⬇ Export Results</button>
+    </div>
+  </div>
+
+  <div class="summary" id="summary" style="display:none;">
+    <div class="card"><div class="label">Total Tests</div><div class="value total" id="totalCount">0</div></div>
+    <div class="card"><div class="label">Passed</div><div class="value pass" id="passCount">0</div></div>
+    <div class="card"><div class="label">Failed</div><div class="value fail" id="failCount">0</div></div>
+    <div class="card"><div class="label">Accuracy</div><div class="value pct" id="accuracy">0%</div></div>
+    <div class="card"><div class="label">Duration</div><div class="value" id="duration" style="color:var(--yellow);">0ms</div></div>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="filters" id="filters" style="display:none;"></div>
+
+  <div class="table-wrap">
+    <div class="loading" id="loadingMsg">
+      <div>Press <strong>▶ Run Tests</strong> to begin.</div>
+    </div>
+    <table id="resultsTable" style="display:none;">
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th style="width:70px;">Status</th>
+          <th style="width:80px;">Expected</th>
+          <th style="width:80px;">Actual</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Input</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ── DLP Detection Engine (inline copy of regex detection logic) ──────────────
+const DLP_PATTERNS = [
+  { name: 'AWS Key',        regex: /AKIA[0-9A-Z]{16}/,                                                        severity: 'critical' },
+  { name: 'Google API Key', regex: /AIza[0-9A-Za-z_-]{35}/,                                                   severity: 'critical' },
+  { name: 'GitHub Token',   regex: /gh[ps]_[a-zA-Z0-9]{36}/,                                                  severity: 'critical' },
+  { name: 'Slack Token',    regex: /xox[bpars]-[a-zA-Z0-9-]+/,                                                severity: 'high'     },
+  { name: 'Private Key',    regex: /-----BEGIN\s+(RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----/,              severity: 'critical' },
+  { name: 'JWT',            regex: /eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}/,          severity: 'high'     },
+  { name: 'SSN',            regex: /\b\d{3}-\d{2}-\d{4}\b/,                                                   severity: 'critical' },
+  { name: 'Credit Card',    regex: /\b(?:\d{4}[- ]?){3}\d{4}\b/,                                              severity: 'high'     },
+  { name: 'Email',          regex: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/,                         severity: 'medium'   },
+  { name: 'API Key',        regex: /(?:api[_-]?key|secret|token|password|auth)\s*[:=]\s*["']?([a-f0-9]{32,})["']?/i, severity: 'high' },
+];
+
+/**
+ * Scan text against all DLP patterns (mirrors content.js logic exactly).
+ * @param {string} text
+ * @returns {{ decision: 'block'|'allow', matches: Array<{pattern: string, match: string}> }}
+ */
+function detectDLP(text) {
+  if (!text || typeof text !== 'string' || text.length < 3) {
+    return { decision: 'allow', matches: [] };
+  }
+  const matches = [];
+  for (const { name, regex } of DLP_PATTERNS) {
+    const m = text.match(regex);
+    if (m) {
+      matches.push({ pattern: name, match: m[0] });
+    }
+  }
+  return {
+    decision: matches.length > 0 ? 'block' : 'allow',
+    matches,
+  };
+}
+
+// ── Test Runner Logic ────────────────────────────────────────────────────────
+let testResults = null;
+
+async function runTests() {
+  const runBtn = document.getElementById('runBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const loadingMsg = document.getElementById('loadingMsg');
+  const resultsTable = document.getElementById('resultsTable');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+  const summaryDiv = document.getElementById('summary');
+  const filtersDiv = document.getElementById('filters');
+
+  runBtn.disabled = true;
+  runBtn.textContent = '⏳ Running…';
+  exportBtn.disabled = true;
+  loadingMsg.innerHTML = '<div class="spinner"></div><div>Loading test cases…</div>';
+  loadingMsg.style.display = 'block';
+  resultsTable.style.display = 'none';
+  summaryDiv.style.display = 'none';
+  progressWrap.style.display = 'block';
+  progressBar.style.width = '0%';
+
+  let testCases;
+  try {
+    const resp = await fetch('test-cases.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    testCases = await resp.json();
+  } catch (err) {
+    loadingMsg.innerHTML = `<div style="color:var(--red);">❌ Failed to load test-cases.json: ${err.message}</div>`;
+    runBtn.disabled = false;
+    runBtn.textContent = '▶ Run Tests';
+    return;
+  }
+
+  loadingMsg.innerHTML = '<div class="spinner"></div><div>Running tests…</div>';
+
+  const results = [];
+  const t0 = performance.now();
+
+  for (let i = 0; i < testCases.length; i++) {
+    const tc = testCases[i];
+    const { decision, matches } = detectDLP(tc.input);
+    const passed = decision === tc.expected;
+    results.push({
+      index: i + 1,
+      input: tc.input,
+      expected: tc.expected,
+      actual: decision,
+      passed,
+      type: tc.type,
+      description: tc.description,
+      matchedPatterns: matches,
+    });
+    progressBar.style.width = `${((i + 1) / testCases.length * 100).toFixed(1)}%`;
+  }
+
+  const elapsed = (performance.now() - t0).toFixed(1);
+  const totalCount = results.length;
+  const passCount = results.filter(r => r.passed).length;
+  const failCount = totalCount - passCount;
+  const accuracy = totalCount > 0 ? ((passCount / totalCount) * 100).toFixed(1) : '0';
+
+  testResults = {
+    timestamp: new Date().toISOString(),
+    summary: { total: totalCount, passed: passCount, failed: failCount, accuracy: `${accuracy}%`, durationMs: parseFloat(elapsed) },
+    results,
+  };
+
+  // Update summary cards
+  document.getElementById('totalCount').textContent = totalCount;
+  document.getElementById('passCount').textContent = passCount;
+  document.getElementById('failCount').textContent = failCount;
+  document.getElementById('accuracy').textContent = `${accuracy}%`;
+  document.getElementById('duration').textContent = `${elapsed}ms`;
+  summaryDiv.style.display = 'grid';
+
+  // Build filter tabs
+  const types = ['All', ...new Set(results.map(r => r.passed ? 'Passed' : 'Failed')), ...new Set(results.map(r => r.type).filter(Boolean))];
+  const uniqueTypes = [...new Set(types)];
+  filtersDiv.innerHTML = uniqueTypes.map(t =>
+    `<button class="filter-btn${t === 'All' ? ' active' : ''}" onclick="filterResults('${t}', this)">${t}</button>`
+  ).join('');
+  filtersDiv.style.display = 'flex';
+
+  renderResults(results);
+
+  loadingMsg.style.display = 'none';
+  resultsTable.style.display = 'table';
+  runBtn.disabled = false;
+  runBtn.textContent = '▶ Re-run Tests';
+  exportBtn.disabled = false;
+}
+
+function renderResults(results) {
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = results.map(r => {
+    const statusClass = r.passed ? 'pass' : 'fail';
+    const statusText = r.passed ? '✓ PASS' : '✗ FAIL';
+    const statusColorClass = r.passed ? 'pass-text' : 'fail-text';
+    const expectedTag = r.expected === 'block'
+      ? '<span class="tag tag-block">block</span>'
+      : '<span class="tag tag-allow">allow</span>';
+    const actualTag = r.actual === 'block'
+      ? '<span class="tag tag-block">block</span>'
+      : '<span class="tag tag-allow">allow</span>';
+    const typeTag = r.type ? `<span class="type-tag">${escHtml(r.type)}</span>` : '<span class="type-tag" style="opacity:0.4;">—</span>';
+    const truncInput = r.input.length > 120 ? r.input.slice(0, 117) + '…' : r.input;
+
+    return `<tr class="${statusClass}">
+      <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.78rem;">${r.index}</td>
+      <td class="status-cell ${statusColorClass}">${statusText}</td>
+      <td>${expectedTag}</td>
+      <td>${actualTag}</td>
+      <td>${typeTag}</td>
+      <td class="desc-cell">${escHtml(r.description)}</td>
+      <td class="input-cell" title="${escAttr(r.input)}">${escHtml(truncInput)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterResults(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (!testResults) return;
+  let filtered = testResults.results;
+  if (type === 'Passed') filtered = filtered.filter(r => r.passed);
+  else if (type === 'Failed') filtered = filtered.filter(r => !r.passed);
+  else if (type !== 'All') filtered = filtered.filter(r => r.type === type);
+  renderResults(filtered);
+}
+
+function exportResults() {
+  if (!testResults) return;
+  const blob = new Blob([JSON.stringify(testResults, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dlp-test-results-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function escAttr(s) {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+</script>
+</body>
+</html>
