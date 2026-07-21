@@ -24,6 +24,20 @@ A lightweight, zero-trust browser extension built on Chrome Manifest V3 that pre
    - Base64 Evasions
 4. **Rich Analytics Dashboard:** Click the extension icon to view real-time metrics, a severity bar chart, and a timeline feed of recently blocked threats.
 
+## 🎯 Supported Use Cases
+
+**1. Shadow AI Data Leakage Prevention**
+Employees often paste PII, financial data, or API keys into ChatGPT without IT approval. This extension blocks those pastes at the endpoint level before they ever reach external servers.
+
+**2. Regulatory Compliance Enforcement (HIPAA, PCI-DSS, GDPR)**
+By actively blocking Credit Cards and Social Security Numbers, this tool acts as a technical enforcement layer for "No PII to AI" policies. The local dashboard serves as an audit trail for compliance reporting.
+
+**3. AI Agent Security & Prompt Injection Defense**
+Autonomous AI agents that read web pages are highly vulnerable to malicious instructions hidden in websites. By intercepting the data layer, this extension detects and neutralizes prompt injections before the LLM can execute them.
+
+**4. AI Governance Enforcement**
+The extension implements "Policy-as-Code." When authorized humans need to legitimately bypass a DLP block (e.g., for testing), they can click "Allow Anyway." However, automated scripts and unauthorized agents are strictly hard-blocked from bypassing the DLP engine.
+
 ## 🚀 Installation (Developer Mode)
 
 Since this is a custom prototype, you must load it as an "unpacked" extension.
