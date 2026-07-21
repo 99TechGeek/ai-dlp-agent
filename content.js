@@ -171,9 +171,10 @@
     const result = detectSensitiveData(pastedText);
 
     if (result.isSensitive) {
-      if (event.isTrusted && event.target.dataset.dlpBypass && (Date.now() - parseInt(event.target.dataset.dlpBypass) < 15000)) {
+      const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
+      if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
         // Bypass active, allow it through
-        delete event.target.dataset.dlpBypass;
+        delete document.documentElement.dataset.dlpBypass;
         return;
       }
 
@@ -203,9 +204,10 @@
       const result = detectSensitiveData(value);
 
       if (result.isSensitive) {
-        if (event.isTrusted && field.dataset.dlpBypass && (Date.now() - parseInt(field.dataset.dlpBypass) < 15000)) {
+        const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
+        if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
           // Bypass active
-          delete field.dataset.dlpBypass;
+          delete document.documentElement.dataset.dlpBypass;
           continue;
         }
 
@@ -240,9 +242,10 @@
     const result = detectSensitiveData(value);
 
     if (result.isSensitive) {
-      if (event.isTrusted && target.dataset.dlpBypass && (Date.now() - parseInt(target.dataset.dlpBypass) < 15000)) {
+      const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
+      if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
         // Bypass active
-        delete target.dataset.dlpBypass;
+        delete document.documentElement.dataset.dlpBypass;
         return;
       }
 
@@ -296,7 +299,8 @@
       const result = detectSensitiveData(value);
 
       if (result.isSensitive) {
-        if (event.isTrusted && target.dataset.dlpBypass && (Date.now() - parseInt(target.dataset.dlpBypass) < 15000)) {
+        const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
+        if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
           return;
         }
 
@@ -353,7 +357,9 @@
     const result = detectSensitiveData(droppedText);
 
     if (result.isSensitive) {
-      if (event.isTrusted && event.target.dataset.dlpBypass && (Date.now() - parseInt(event.target.dataset.dlpBypass) < 15000)) {
+      const bypassTime = parseInt(document.documentElement.dataset.dlpBypass);
+      if (event.isTrusted && bypassTime && (Date.now() - bypassTime < 15000)) {
+        delete document.documentElement.dataset.dlpBypass;
         return;
       }
       event.preventDefault();
@@ -582,7 +588,7 @@
       bypassBtn.className = 'ai-dlp-bypass-btn';
       bypassBtn.textContent = 'Allow Anyway';
       bypassBtn.onclick = () => {
-        element.dataset.dlpBypass = Date.now();
+        document.documentElement.dataset.dlpBypass = Date.now();
         warning.style.animation = 'ai-dlp-slide-out 0.3s ease-in forwards';
         setTimeout(() => { if (warning.parentNode) warning.remove(); }, 300);
       };
