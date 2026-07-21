@@ -101,6 +101,11 @@
       severity: 'high'
     },
     {
+      name: 'PI: Developer Confusion',
+      regex: /(?:developer\s+message\s+is\s+outdated|user\s+(?:instructions\s+)?override\s+(?:developer\s+)?instructions|developer\s+message\s+is\s+optional|system\s+instructions\s+are\s+examples\s+only|user\s+has\s+higher\s+priority|only\s+follow\s+my\s+latest\s+message)/i,
+      severity: 'high'
+    },
+    {
       name: 'PI: Tool Abuse',
       regex: /(?:call\s+this\s+api|ignore\s+approval|upload\s+this\s+file|execute\s+this\s+(?:command|shell)|run\s+this\s+(?:code|script)|access\s+private\s+files|sudo\s+rm\s+-rf|disable\s+security|remove\s+authentication|turn\s+off\s+validation)/i,
       severity: 'high'
